@@ -18,6 +18,7 @@ public class ClientMain
         } catch (IOException e) {
             System.out.println("Cannot reach server " + e);
         }
+        System.out.println("Write something");
 
         PrintWriter out = null; //allocate to write answer to client.
         try {
@@ -41,9 +42,10 @@ public class ClientMain
 
         while (true) {
             try {
-                if (!((userInput = stdIn.readLine()) != null)) break;
+                if ((userInput = stdIn.readLine()) != null)
                 out.println(userInput);
-                out.println("Echo: " + in.readLine());
+                System.out.println("Server echo: " + in.readLine());
+                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }

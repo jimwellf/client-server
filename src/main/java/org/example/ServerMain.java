@@ -27,7 +27,6 @@ public class ServerMain
         } catch (IOException e) {
             System.out.println("Accept failed" + e);
         }
-
         System.out.println("Server accepted");
 
         // Alloco reader sul socket
