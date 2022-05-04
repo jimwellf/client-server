@@ -32,19 +32,21 @@ public class ServerMain
         }
 
         while (true) {
+
+            clientSocket = openClientSocket();
+            System.out.println("Server accepted");
+
             manageClient();
+
             try {
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     private static void manageClient() {
-        clientSocket = openClientSocket();
-        System.out.println("Server accepted");
         in = allocateReader();
         out = allocateWriter();
         handleInput();
