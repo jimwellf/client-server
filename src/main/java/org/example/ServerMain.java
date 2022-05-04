@@ -10,6 +10,10 @@ import java.net.Socket;
 public class ServerMain
 {
     static int portNumber = 1234;
+    static BufferedReader in = null;
+    static PrintWriter out = null;
+    static Socket clientSocket = null;
+    static ServerSocket serverSocket = null;
 
     public static void main(String[] args) {
         System.out.println("Server started!");
@@ -22,31 +26,83 @@ public class ServerMain
         }
 */
 
-        ServerSocket serverSocket = openToServer();
+        serverSocket = openServer();
         if (serverSocket == null) {
             return;
         }
 
-        Socket clientSocket = openClientSocket(serverSocket);
+        while (true) {
+            manageClient();
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+    }
+
+    private static void manageClient() {
+        clientSocket = openClientSocket();
         System.out.println("Server accepted");
+        in = allocateReader();
+        out = allocateWriter();
+        handleInput();
+    }
 
-        BufferedReader in = allocateReader(clientSocket);
-        PrintWriter out = allocateWriter(clientSocket);
-
+    private static void handleInput() {
         String userInput;
         try {
-            while((userInput = in.readLine()) != null)
-            {
-                System.out.println("Client: " + userInput);
-                out.println(userInput.toUpperCase() + " haaaaaa.");
+            while ((userInput = in.readLine()) != null) {
+                System.out.println("Client: " + (userInput));
+                out.println(process(userInput));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Client disconnected");
         }
     }
 
-    private static ServerSocket openToServer() {
+    private static String process(String input) {
+        if (input.contains("+")) {
+            String[] operators = input.split("\\+");
+            int result = 0;
+            for (int i = 0; i < operators.length; i++) {
+                result += Integer.parseInt(operators[i]);
+            }
+            return Integer.toString(result);
+
+        } else if (input.contains("-")) {
+            String[] operators = input.split("-");
+            int result = Integer.parseInt(operators[0]);
+            for (int i = 1; i < operators.length; i++) {
+                result -= Integer.parseInt(operators[i]);
+            }
+            return Integer.toString(result);
+
+        } else if (input.contains("*")) {
+            String[] operators = input.split("\\*");
+
+            int result = 1;
+            for (int i = 0; i < operators.length; i++) {
+                result *= Integer.parseInt(operators[i]);
+            }
+            return Integer.toString(result);
+
+        } else if (input.contains("/")) {
+            String[] operators = input.split("/");
+            int result = Integer.parseInt(operators[0]);
+            for (int i = 1; i < operators.length; i++)
+            {
+                result = result / Integer.parseInt(operators[i]);
+            }
+            return Integer.toString(result);
+
+        } else {
+            input = input.toUpperCase();
+        } return input;
+    }
+
+    private static ServerSocket openServer() {
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(portNumber);
@@ -56,8 +112,7 @@ public class ServerMain
         } return serverSocket;
     }
 
-    private static Socket openClientSocket(ServerSocket serverSocket) {
-        Socket clientSocket;
+    private static Socket openClientSocket() {
         try {
             clientSocket = serverSocket.accept();
         } catch (IOException e) {
@@ -66,9 +121,7 @@ public class ServerMain
         } return clientSocket;
     }
 
-
-    private static BufferedReader allocateReader(Socket clientSocket) {
-        BufferedReader in;
+    private static BufferedReader allocateReader() {
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
@@ -77,18 +130,13 @@ public class ServerMain
         } return in;
     }
 
-    private static PrintWriter allocateWriter(Socket clientSocket) {
-        PrintWriter out;
+    private static PrintWriter allocateWriter() {
         try {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         } return out;
-    }
-
-    private void proccess() {
-
     }
 }
 
