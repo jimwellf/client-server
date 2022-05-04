@@ -32,17 +32,22 @@ public class ServerMain
         }
 
         while (true) {
-
             clientSocket = openClientSocket();
             System.out.println("Server accepted");
+            Thread th = new Thread(
+                () -> {
+                    manageClient();
+                    closeClientSocket();
+                });
+            th.start();
+        }
+    }
 
-            manageClient();
-
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    private static void closeClientSocket() {
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
