@@ -8,9 +8,20 @@ import java.net.Socket;
 
 public class ClientMain
 {
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         String hostName = "127.0.0.1";
         int portNumber = 1234;
+
+/*
+        if(argc == 2) {
+            hostName = args[0];
+            portNumber = Integer.parseInt(args[1]);
+        } else {
+            hostName = Prefs.ReadHostFromJSON();
+            portNumber = Prefs.ReadPortFromJSON();
+        }
+*/
 
         Socket echoSocket = null;
         try {
@@ -24,7 +35,7 @@ public class ClientMain
         try {
             out = new PrintWriter(echoSocket.getOutputStream(), true);
         } catch (IOException e) {
-            System.out.println("Writer failed" + e);
+            System.out.println("Writer failed. " + e);
         }
 
         BufferedReader in = null;
@@ -32,20 +43,18 @@ public class ClientMain
             in = new BufferedReader(
                     new InputStreamReader(echoSocket.getInputStream()));
         } catch (IOException e) {
-            System.out.println("Reader failed " + e);
+            System.out.println("Reader failed. " + e);
         }
 
         BufferedReader stdIn;
         stdIn = new BufferedReader(new InputStreamReader(System.in));
 
         String userInput;
-
         while (true) {
             try {
                 if ((userInput = stdIn.readLine()) != null)
                 out.println(userInput);
-                System.out.println("Server echo: " + in.readLine());
-                out.flush();
+                System.out.println("Server: " + in.readLine());
             } catch (IOException e) {
                 e.printStackTrace();
             }

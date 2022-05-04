@@ -14,46 +14,81 @@ public class ServerMain
     public static void main(String[] args) {
         System.out.println("Server started!");
 
-        ServerSocket serverSocket = null;
-        try {
-            serverSocket = new ServerSocket(portNumber);
-        } catch (IOException e) {
-            e.printStackTrace();
+/*
+        if(argc == 2) {
+            portNumber = Integer.parseInt(args[1]);
+        } else {
+            portNumber = Prefs.ReadPortFromJSON();
+        }
+*/
+
+        ServerSocket serverSocket = openToServer();
+        if (serverSocket == null) {
+            return;
         }
 
-        Socket clientSocket = null;
-        try {
-            clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Accept failed" + e);
-        }
+        Socket clientSocket = openClientSocket(serverSocket);
+
         System.out.println("Server accepted");
 
-        // Alloco reader sul socket
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        } catch (IOException e) {
-            System.out.println("Reader failed" + e);
-        }
+        BufferedReader in = allocateReader(clientSocket);
+        PrintWriter out = allocateWriter(clientSocket);
 
-        PrintWriter out = null;
+        String userInput;
         try {
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String s;
-        try {
-            while((s = in.readLine()) != null)
+            while((userInput = in.readLine()) != null)
             {
-                System.out.println(s);
-                out.println(s.toUpperCase());
+                System.out.println("Client: " + userInput);
+                out.println(userInput.toUpperCase() + " haaaaaa.");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static ServerSocket openToServer() {
+        ServerSocket serverSocket;
+        try {
+            serverSocket = new ServerSocket(portNumber);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } return serverSocket;
+    }
+
+    private static Socket openClientSocket(ServerSocket serverSocket) {
+        Socket clientSocket;
+        try {
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
+            System.out.println("Accept failed" + e);
+            return null;
+        } return clientSocket;
+    }
+
+
+    private static BufferedReader allocateReader(Socket clientSocket) {
+        BufferedReader in;
+        try {
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        } catch (IOException e) {
+            System.out.println("Reader failed" + e);
+            return null;
+        } return in;
+    }
+
+    private static PrintWriter allocateWriter(Socket clientSocket) {
+        PrintWriter out;
+        try {
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } return out;
+    }
+
+    private void proccess() {
+
     }
 }
 
