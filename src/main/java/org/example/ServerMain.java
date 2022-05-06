@@ -14,8 +14,6 @@ public class ServerMain
     private static Socket clientSocket = null;
 
     public static void main(String[] args) {
-        System.out.println("Server started!");
-
 /*
         if(argc == 2) {
             portNumber = Integer.parseInt(args[1]);
@@ -28,14 +26,18 @@ public class ServerMain
             return;
         }
 
+        System.out.println("Server started!");
+
+        ClientHandler clientHandler = new ClientHandler();
+
         while (true) {
             clientSocket = openClientSocket();
+            Thread th = new Thread(() ->
+            {
+                clientHandler.handleReaderPrinter(clientSocket);
+                closeClientSocket();
+            });
 
-            Thread th = new Thread(() -> {
-                        ClientHandler clientHandler = new ClientHandler();
-                        clientHandler.handleReaderPrinter(clientSocket);
-                        closeClientSocket();
-                    });
             th.start();
         }
     }

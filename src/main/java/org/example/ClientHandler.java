@@ -11,22 +11,6 @@ public class ClientHandler {
     private static BufferedReader in = null;
     private static PrintWriter out = null;
 
-    public BufferedReader getIn() {
-        return in;
-    }
-
-    public void setIn(BufferedReader in) {
-        ClientHandler.in = in;
-    }
-
-    public static PrintWriter getOut() {
-        return out;
-    }
-
-    public static void setOut(PrintWriter out) {
-        ClientHandler.out = out;
-    }
-
     public void handleReaderPrinter(Socket clientSocket) {
         in = allocateReader(clientSocket);
         out = allocateWriter(clientSocket);
@@ -75,7 +59,30 @@ public class ClientHandler {
             int result = Integer.parseInt(operators[0]);
             for (int i = 1; i < operators.length; i++)
             {
-                result = result / Integer.parseInt(operators[i]);
+                try {
+                    result = result / Integer.parseInt(operators[i]);
+                }
+                catch (ArithmeticException e) {
+                    String error = "Divided by zero operation cannot possible";
+                    return error;
+                }
+
+            }
+            return Integer.toString(result);
+
+        }  else if (input.contains(":")) {
+            String[] operators = input.split(":");
+            int result = Integer.parseInt(operators[0]);
+            for (int i = 1; i < operators.length; i++)
+            {
+                try {
+                    result = result / Integer.parseInt(operators[i]);
+                }
+                catch (ArithmeticException e) {
+                    String error = "Divided by zero operation cannot possible";
+                    return error;
+                }
+
             }
             return Integer.toString(result);
 
@@ -84,7 +91,7 @@ public class ClientHandler {
         } return input;
     }
 
-    public BufferedReader allocateReader(Socket clientSocket) {
+    private BufferedReader allocateReader(Socket clientSocket) {
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         } catch (IOException e) {
@@ -93,7 +100,7 @@ public class ClientHandler {
         } return in;
     }
 
-    public PrintWriter allocateWriter(Socket clientSocket) {
+    private PrintWriter allocateWriter(Socket clientSocket) {
         try {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
         } catch (IOException e) {
